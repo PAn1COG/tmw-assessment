@@ -33,18 +33,7 @@ Ensure you have the following installed:
    cd tmw-assessment
    ```
 
-2. Install the dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-3. Set up the database:
-   - Run migrations:
-     ```bash
-     python manage.py migrate
-     ```
-
-4. Start the development server:
+2. Start the development server:
    ```bash
    python manage.py runserver
    ```
