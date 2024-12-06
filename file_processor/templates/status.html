@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Task Status</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      .loader {
+        border: 4px solid #f3f3f3;
+        border-top: 4px solid #3498db;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        animation: spin 1s linear infinite;
+        margin: 0 auto;
+      }
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
+    <script src="js/status.js" defer></script>
+  </head>
+  <body class="bg-gray-100 font-sans antialiased">
+    <div class="max-w-3xl mx-auto p-6 bg-white shadow-lg rounded-md mt-10">
+      <h1 class="text-3xl font-bold mb-6 text-center">Task Status</h1>
+
+      <div class="space-y-4 text-center" id="status-container">
+        <p><strong>Task ID:</strong> <span id="task-id"></span></p>
+        <p><strong>File Name:</strong> <span id="file-name"></span></p>
+        <p><strong>Status:</strong> <span id="task-status"></span></p>
+        <div id="loader-container" class="hidden">
+          <div class="loader"></div>
+          <p>Processing...</p>
+        </div>
+        <p id="task-result" class="hidden"><strong>Result:</strong></p>
+      </div>
+
+      <div class="mt-6">
+        <button
+          onclick="window.location.href='/'"
+          class="w-full bg-blue-500 text-white font-semibold py-2 rounded hover:bg-blue-600 transition duration-200"
+        >
+          Back to Home
+        </button>
+      </div>
+    </div>
+  </body>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const taskId = new URL(window.location.href).searchParams.get("task_id");
+      const taskStatusElement = document.getElementById("task-status");
+      const taskResultElement = document.getElementById("task-result");
+      const loaderContainer = document.getElementById("loader-container");
+
+      // Function to fetch status
+      const fetchTaskStatus = () => {
+        fetch(`http://127.0.0.1:8000/status/?task_id=${taskId}`)
+          .then((response) => response.json())
+          .then((data) => {
+            document.getElementById("task-id").textContent = data.task_id;
+            document.getElementById("file-name").textContent = data.file_name;
+            taskStatusElement.textContent = data.status;
+
+            if (data.error) {
+              alert("Task not found. Please check the file or try again.");
+              window.location.href = "index.html";
+            }
+
+            if (data.status === "processing") {
+              // Only fetch if still processing
+              loaderContainer.classList.remove("hidden");
+            } else {
+              loaderContainer.classList.add("hidden");
+              taskResultElement.textContent = `Result: ${data.result}`;
+              taskResultElement.classList.remove("hidden");
+              // Stop when processing is complete
+              clearInterval(statusInterval);
+            }
+          })
+          .catch((error) => {
+            console.error("Error fetching task status:", error);
+            taskStatusElement.textContent = "Error occurred";
+            loaderContainer.classList.add("hidden");
+            // Stop if there is error
+            clearInterval(statusInterval);
+          });
+      };
+
+      // Initial fetch
+      fetchTaskStatus();
+      const statusInterval = setInterval(fetchTaskStatus, 3000);
+    });
+  </script>
+</html>
