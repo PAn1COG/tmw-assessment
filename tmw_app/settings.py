@@ -58,10 +58,6 @@ CORS_ALLOWED_ORIGINS = [
     'http://127.0.0.1:5500'
 ]
 
-STATICFILES_DIRS = [
-    BASE_DIR / "frontEnd",
-]
-
 CORS_ALLOW_CREDENTIALS = True 
 
 ROOT_URLCONF = 'tmw_app.urls'

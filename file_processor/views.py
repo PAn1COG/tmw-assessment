@@ -16,7 +16,7 @@ def status(request):
     return render(request, 'status.html')
 
 def async_process_file(task_id, file_content):
-    # process the file using the process_file.py script as soon as file
+    # process the file using the process_file.py script as soon as file is uploaded
     try:
         # Run the subprocess
         result = subprocess.run(
@@ -64,6 +64,8 @@ def upload_file(request):
 # to get file status and results
 def file_status(request):
     task_id = request.GET.get('task_id')
+    if(not task_id):
+        return JsonResponse({'error': 'Task id is required'}, status=400)
     try:
         task = FileTask.objects.get(task_id=task_id)
         response = {
