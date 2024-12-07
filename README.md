@@ -1,4 +1,4 @@
-# **Django Project Name**
+# **TMW-Assessment**
 
 This Django web application is designed for the TMW-Center programming assessment.
 
